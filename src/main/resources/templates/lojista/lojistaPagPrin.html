@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel do Lojista</title>
+</head>
+<body>
+
+    <h1 th:text="'Bem-vindo, ' + ${nome} + '!'">Bem-vindo, Lojista!</h1>
+
+    <nav>
+        <ul>
+            <li><a href="/lojista/dashboard">Dashboard</a></li>
+            <li><a href="/lojista/produtos">Gerenciar Produtos</a></li>
+            <li><a href="/lojista/estoque">Controle de Estoque</a></li>
+            <li><a href="/lojista/pedidos">Pedidos</a></li>
+            <li><a href="/user/add">Adicionar Usuário</a></li>
+            <li><a href="/login/logout">Sair</a></li>
+        </ul>
+    </nav>
+
+</body>
+</html>
