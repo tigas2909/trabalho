@@ -6,11 +6,11 @@ import com.example.trabalho_loja_virtual.entities.User;
 import com.example.trabalho_loja_virtual.enums.Tipo_User;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -30,22 +30,21 @@ public class LoginController {
         return "login/loginForm";
     }
 
-    @PostMapping("/enter")
-    public String enter(@RequestParam String email, 
-                        @RequestParam String senha, 
-                        HttpServletResponse response) {
+    @PostMapping("/login/enter")
+    public String login(String email, String senha,
+                        HttpServletResponse response,
+                        HttpSession session) {
 
-        boolean isAuthenticated = loginService.logar(email, senha, response);
-
-        if (isAuthenticated) {
-            User user = userService.getUserByEmail(email);
+        boolean ok = loginService.logar(email, senha, response, session);
+        User user = userService.getUserByEmail(email);
+        if (ok) {
             if (user.getTipoUser() == Tipo_User.lOJISTA) {
-                return "redirect:/lojista/"+user.getEmail();
+                return "redirect:/lojista/" + email;
             } else {
-                return "/cliente/dashboard";
+                return "redirect:/cliente/dashboard";
             }
         } else {
-            return "redirect:/login/?error=true";
+            return "redirect:/login/";
         }
     }
 

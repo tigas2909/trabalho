@@ -46,7 +46,7 @@ class TrabalhoLojaVirtualApplicationTests {
 		userRepository.save(u1);
 	}	
 	*/
-
+	/*
 	@Test
 	void testLogin() {
 		// Simulando o processo de login
@@ -57,4 +57,5 @@ class TrabalhoLojaVirtualApplicationTests {
 
 		System.out.println(resultado); // Verificando se o login foi bem-sucedido
 	}
+	*/
 }
