@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            margin: 0;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        .nome {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .preco {
+            color: green;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .btn {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 8px;
+            background: #1f2937;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a th:href="@{/cliente/}">🛒 Lista de Produtos</a>
+</header>
+
+<a class="btn" th:href="@{/cliente/retornar}">
+    ⬅️ Voltar
+</a>
+
+<div class="container">
+
+    <div class="card" th:each="p : ${produtos}">
+
+        <div class="nome" th:text="${p.nome}"></div>
+
+        <div class="preco"
+             th:text="'R$ ' + ${p.preco}">
+        </div>
+
+        <a class="btn" th:href="@{'/cliente/produto/' + ${p.id}}">
+            Ver detalhes
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

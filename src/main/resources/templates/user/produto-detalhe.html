@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhe do Produto</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .nome {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .descricao {
+            margin-top: 10px;
+            color: #555;
+        }
+
+        .preco {
+            margin-top: 20px;
+            font-size: 26px;
+            color: green;
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 10px;
+            color: #444;
+        }
+
+        .categoria {
+            margin-top: 10px;
+            color: #444;
+        }
+
+        .form-group {
+            margin-top: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .form-group input {
+            width: 80px;
+            padding: 6px;
+        }
+
+        .botoes {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #1f2937;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    🛒 Detalhe do Produto
+</header>
+<a class="btn" th:href="@{/cliente/retornar}">
+    ⬅️ Voltar
+</a>
+
+<div class="container">
+
+    <div class="nome" th:text="${produto.nome}"></div>
+
+    <div class="descricao"
+         th:text="${produto.descricao}">
+    </div>
+
+    <div class="preco"
+         th:text="${'R$ ' + produto.preco}">
+    </div>
+
+    <div class="info"
+         th:text="${'Estoque: ' + produto.estoque}">
+    </div>
+
+    <div class="info"
+         th:text="${'ID do Produto: ' + produto.id}">
+    </div>
+
+    <div class="categoria"
+         th:text="${'Categoria: ' + produto.categoria.nome}">
+    </div>
+
+    <form th:action="@{/cliente/carrinho/adicionar}" method="post">
+
+        <input
+            type="hidden"
+            name="produtoId"
+            th:value="${produto.id}">
+
+        <div class="form-group">
+            <label for="quantidade">Quantidade:</label>
+
+            <input
+                type="number"
+                id="quantidade"
+                name="quantidade"
+                value="1"
+                min="1"
+                th:max="${produto.estoque}">
+        </div>
+
+        <div class="botoes">
+
+            <button type="submit" class="btn">
+                🛒 Adicionar ao Carrinho
+            </button>
+
+            <a class="btn" th:href="@{/cliente/produtos}">
+                Voltar
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+</body>
+</html>

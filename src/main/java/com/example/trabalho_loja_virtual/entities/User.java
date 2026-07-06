@@ -12,29 +12,42 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "O nome é obrigatório")
+    @Size(min = 2, max = 100, message = "O nome deve ter entre 2 e 100 caracteres")
     @Column(nullable = false)
     private String nome;
 
+    @NotBlank(message = "O email é obrigatório")
+    @Email(message = "Informe um email válido")
     @Column(nullable = false, unique = true)
     private String email;
 
+    @NotBlank(message = "A senha é obrigatória")
+    @Size(min = 6, max = 100, message = "A senha deve ter no mínimo 6 caracteres")
     @Column(nullable = false)
     private String senha;
 
+    @NotNull(message = "O tipo de usuário é obrigatório")
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Tipo_User tipoUser;
+    @Column(nullable = false, columnDefinition = "ENUM('CLIENTE','lOJISTA') DEFAULT 'CLIENTE'")
+    private Tipo_User tipoUser = Tipo_User.CLIENTE;
 
+    @NotNull(message = "O status é obrigatório")
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Tipo status;
+    @Column(nullable = false, columnDefinition = "ENUM('ATIVO','INATIVO') DEFAULT 'ATIVO'")
+    private Tipo status = Tipo.ATIVO;
 
     public Long getId() {
         return id;

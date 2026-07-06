@@ -46,28 +46,28 @@
 
     <div class="cards">
 
-        <a href="/lojista/dashboard" class="card">
+        <a th:href="@{/lojista/dashboard}" class="card">
             📊 Dashboard
         </a>
 
-        <a href="/lojista/produtos" class="card">
-            📦 Produtos
-        </a>
-
-        <a href="/lojista/estoque" class="card">
+        <a th:href="@{/lojista/estoque}" class="card">
             📉 Estoque
         </a>
 
-        <a href="/lojista/pedidos" class="card">
+        <a th:href="@{/lojista/pedidos}" class="card">
             🧾 Pedidos
         </a>
 
-        <a href="/user/add" class="card">
+        <a th:href="@{/lojista/add}" class="card">
             👤 Adicionar Usuário
         </a>
 
-        <a href="/login/logout" class="card">
+        <a th:href="@{/login/logout}" class="card">
             🚪 Sair
+        </a>
+
+        <a th:href="@{/lojista/listarAll}" class="card">
+            👥 Lista de Usuários
         </a>
 
     </div>

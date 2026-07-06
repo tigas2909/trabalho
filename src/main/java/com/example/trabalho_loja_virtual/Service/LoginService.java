@@ -2,7 +2,6 @@ package com.example.trabalho_loja_virtual.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.trabalho_loja_virtual.entities.User;
 import com.example.trabalho_loja_virtual.repository.UserRepository;
@@ -35,14 +34,14 @@ public class LoginService {
             return false;
         }
 
-        // 🍪 cookie (identificador)
+        //cookie
         Cookie ck = new Cookie("userId", String.valueOf(user.getId()));
         ck.setHttpOnly(true);
         ck.setPath("/");
         ck.setMaxAge(60 * 60 * 24);
         response.addCookie(ck);
 
-        // 🧠 sessão (dados úteis)
+        //sessão 
         session.setAttribute("userId", user.getId());
         session.setAttribute("email", user.getEmail());
         session.setAttribute("nome", user.getNome());
