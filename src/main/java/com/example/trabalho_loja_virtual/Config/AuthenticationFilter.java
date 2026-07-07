@@ -31,25 +31,23 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            Long userId = extrairUserIdDoCookie(request);
+        Long userId = extrairUserIdDoCookie(request);
 
-            if (userId != null) {
-                userRepository.findById(userId).ifPresent(user -> {
-                    List<GrantedAuthority> authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + user.getTipoUser().name())
+        if (userId != null) {
+            userRepository.findById(userId).ifPresent(user -> {
+                List<GrantedAuthority> authorities = List.of(
+                    new SimpleGrantedAuthority("ROLE_" + user.getTipoUser().name())
+                );
+
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        null,
+                        authorities
                     );
 
-                    UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                            user.getEmail(),
-                            null,
-                            authorities
-                        );
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                });
-            }
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            });
         }
 
         filterChain.doFilter(request, response);

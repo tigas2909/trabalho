@@ -93,7 +93,7 @@
 </a>
 
 <!-- ABERTOS -->
-<div class="section-title">🟡 Abertos</div>
+<div class="section-title"> Abertos</div>
 <div class="container">
 
     <div class="card" th:each="p : ${abertos}">
@@ -101,9 +101,8 @@
             Pedido #<span th:text="${p.id}"></span>
         </div>
 
-        <div class="info">
-            Cliente:
-            <span th:text="${p.cliente?.user?.nome != null ? p.cliente.user.nome : 'Sem cliente'}"></span>
+        <div class="info" th:each="item : ${p.itens}">
+            <span th:text="${item.produto?.nome}" style="margin-right: 12px;"></span>Qtd.: <span th:text="${item.quantidade}"></span>
         </div>
 
         <div class="info"
@@ -113,12 +112,17 @@
         <div class="status aberto"
              th:text="${p.status}">
         </div>
+
+        <form th:action="@{/cliente/pedido/{id}/cancelar(id=${p.id})}" method="post" style="margin-top: 10px;"
+              onsubmit="return confirm('Tem certeza que deseja cancelar este pedido?');">
+            <button type="submit" class="btn" style="background: #dc2626;">Cancelar pedido</button>
+        </form>
     </div>
 
 </div>
 
 <!-- CONCLUÍDOS -->
-<div class="section-title">🟢 Concluídos</div>
+<div class="section-title">Concluídos</div>
 <div class="container">
 
     <div class="card" th:each="p : ${concluidos}">
@@ -126,9 +130,8 @@
             Pedido #<span th:text="${p.id}"></span>
         </div>
 
-        <div class="info">
-            Cliente:
-            <span th:text="${p.cliente?.user?.nome != null ? p.cliente.user.nome : 'Sem cliente'}"></span>
+        <div class="info" th:each="item : ${p.itens}">
+            <span th:text="${item.produto?.nome}" style="margin-right: 12px;"></span>Qtd.: <span th:text="${item.quantidade}"></span>
         </div>
 
         <div class="info"
@@ -143,7 +146,7 @@
 </div>
 
 <!-- CANCELADOS -->
-<div class="section-title">🔴 Cancelados</div>
+<div class="section-title">Cancelados</div>
 <div class="container">
 
     <div class="card" th:each="p : ${cancelados}">
@@ -151,9 +154,8 @@
             Pedido #<span th:text="${p.id}"></span>
         </div>
 
-        <div class="info">
-            Cliente:
-            <span th:text="${p.cliente?.user?.nome != null ? p.cliente.user.nome : 'Sem cliente'}"></span>
+        <div class="info" th:each="item : ${p.itens}">
+            <span th:text="${item.produto?.nome}" style="margin-right: 12px;"></span>Qtd.: <span th:text="${item.quantidade}"></span>
         </div>
 
         <div class="info"

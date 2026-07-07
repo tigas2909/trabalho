@@ -50,6 +50,18 @@
             margin-bottom: 8px;
             font-weight: normal;
         }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 2px;
+        }
+        .status-aberto { color: #f59e0b; font-weight: bold; }
+        .status-concluido { color: #22c55e; font-weight: bold; }
+        .status-cancelado { color: #ef4444; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -60,6 +72,7 @@
             <p>Pedido #<span th:text="${pedido.id}"></span></p>
             <p class="pedido-info">Cliente: <span th:text="${pedido.cliente.user.nome}"></span></p>
             <p class="pedido-info">Valor Total: R$ <span th:text="${pedido.valor}"></span></p>
+            <p class="pedido-info">Status: <span th:text="${pedido.status}" th:classappend="${pedido.status.name() == 'ABERTO'} ? 'status-aberto' : (${pedido.status.name() == 'CONCLUIDO'} ? 'status-concluido' : 'status-cancelado')"></span></p>
             <a th:href="@{/lojista/pedidos/{id}/editar(id=${pedido.id})}">Editar</a>
 
             <table>
@@ -80,5 +93,10 @@
             </table>
         </div>
     </div>
+    <div style="text-align: center; margin-top: 20px;">
+    <a href="/lojista/retornar">
+        <button class="btn" style="background: #6c757d; color: white;">Voltar à página principal</button>
+    </a>
+</div>
 </body>
 </html>

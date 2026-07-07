@@ -17,8 +17,7 @@
     }
 
     .top-buttons {
-        text-align: center;
-        margin-bottom: 20px;
+        display: none; /* removed usage */
     }
 
     table {
@@ -82,16 +81,15 @@
 <h1>Lista de Produtos</h1>
 
 <!-- BOTÕES SUPERIORES -->
-<div class="top-buttons">
-
-    <a href="/lojista/produto/add">
+<div style="position: relative; margin-bottom: 20px;">
+    <a href="/lojista/produto/add" style="position: absolute; left: 12px; top: 0;">
         <button class="btn btn-ativar">+ Adicionar Produto</button>
     </a>
-
-    <a href="/lojista/categoria/add">
-        <button class="btn btn-ativar">+ Adicionar Categoria</button>
-    </a>
-
+    <div style="text-align: center;">
+        <a href="/lojista/categorias">
+            <button class="btn btn-ativar">Categorias</button>
+        </a>
+    </div>
 </div>
 
 <table>
@@ -137,6 +135,12 @@
                     <button class="btn btn-editar">Editar</button>
                 </a>
 
+                <!-- EXCLUIR -->
+                <form th:action="@{/lojista/produto/delete/{id}(id=${produto.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                    <button type="submit" class="btn btn-desativar">Excluir</button>
+                </form>
+
                 <!-- TOGGLE STATUS -->
                 <form th:action="@{/lojista/trocar-status/{id}(id=${produto.id})}"
                       method="post"
@@ -163,6 +167,12 @@
         </tr>
     </tbody>
 </table>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="/lojista/retornar">
+        <button class="btn" style="background: #6c757d; color: white;">Voltar à página principal</button>
+    </a>
+</div>
 
 </body>
 </html>

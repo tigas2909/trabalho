@@ -65,18 +65,19 @@
 
 <body>
 
-<form th:action="@{/lojista/categoria/save}" method="post">
+<form th:action="@{/lojista/categoria/save}" method="post" th:object="${categoria}">
 
     <h2 th:text="${categoria.id == null} ? 'Adicionar Categoria' : 'Editar Categoria'"></h2>
 
-    <input type="hidden" name="id" th:value="${categoria.id}">
+    <input type="hidden" th:field="*{id}">
 
     <label>Nome</label>
-    <input type="text" name="nome" th:value="${categoria.nome}" required>
+    <input type="text" th:field="*{nome}" required>
+    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" style="color:red; font-size:0.8em;"></span>
 
     <button type="submit">Salvar</button>
 
-    <a href="/lojista/estoque">Cancelar</a>
+    <a href="/lojista/categorias">Cancelar</a>
 
 </form>
 

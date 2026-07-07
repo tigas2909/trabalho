@@ -48,7 +48,7 @@ public class Produto {
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
-    @NotBlank(message = "O status do produto é obrigatório")
+    @NotNull(message = "O status do produto é obrigatório")
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Tipo status;

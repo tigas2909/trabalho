@@ -1,5 +1,6 @@
 package com.example.trabalho_loja_virtual.Config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +18,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationFilter authenticationFilter) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
             .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
                 //Rotas públicas
@@ -35,7 +37,6 @@ public class SecurityConfig {
                 //Qualquer outra requisição exige login
                 .anyRequest().authenticated()
             )
-            .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable());
         return http.build();

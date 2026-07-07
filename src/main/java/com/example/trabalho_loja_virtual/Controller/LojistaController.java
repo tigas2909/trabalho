@@ -3,8 +3,11 @@ package com.example.trabalho_loja_virtual.Controller;
 import com.example.trabalho_loja_virtual.Service.PedidoService;
 import com.example.trabalho_loja_virtual.Service.UserService;
 import com.example.trabalho_loja_virtual.entities.Categoria;
+import com.example.trabalho_loja_virtual.entities.Item_Pedido;
+import com.example.trabalho_loja_virtual.entities.Pedidos;
 import com.example.trabalho_loja_virtual.entities.Produto;
 import com.example.trabalho_loja_virtual.entities.User;
+import com.example.trabalho_loja_virtual.enums.PedidosStatus;
 import com.example.trabalho_loja_virtual.enums.Tipo;
 import com.example.trabalho_loja_virtual.repository.CategoriaRepository;
 import com.example.trabalho_loja_virtual.repository.ItemPedidoRepository;
@@ -18,7 +21,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -193,20 +199,54 @@ public class LojistaController {
     }
 
     @PostMapping("/produto/save")
-    public String salvarProduto(Produto produto) {
+    public String salvarProduto(@Valid Produto produto, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categorias", categoriaRepository.findAll());
+            return "lojista/produtoForm";
+        }
         produtosRepository.save(produto);
         return "redirect:/lojista/estoque";
     }
 
-    @GetMapping("/categoria/add")
-public String addCategoria(Model model) {
-    model.addAttribute("categoria", new Categoria());
-    return "lojista/categoriaForm";
-}
-    @PostMapping("/categoria/save")
-    public String salvarCategoria(Categoria categoria) {
-        categoriaRepository.save(categoria);
+    @PostMapping("/produto/delete/{id}")
+    public String deletarProduto(@PathVariable Long id) {
+        produtosRepository.deleteById(id);
         return "redirect:/lojista/estoque";
+    }
+
+    @GetMapping("/categorias")
+    public String listarCategorias(Model model) {
+        model.addAttribute("categorias", categoriaRepository.findAll());
+        return "lojista/categorias";
+    }
+
+    @GetMapping("/categoria/add")
+    public String addCategoria(Model model) {
+        model.addAttribute("categoria", new Categoria());
+        return "lojista/categoriaForm";
+    }
+
+    @GetMapping("/categoria/editar/{id}")
+    public String editarCategoria(@PathVariable Long id, Model model) {
+        Categoria categoria = categoriaRepository.findById(id).orElseThrow();
+        model.addAttribute("categoria", categoria);
+        return "lojista/categoriaForm";
+    }
+
+    @PostMapping("/categoria/save")
+    public String salvarCategoria(@Valid Categoria categoria, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("categoria", categoria);
+            return "lojista/categoriaForm";
+        }
+        categoriaRepository.save(categoria);
+        return "redirect:/lojista/categorias";
+    }
+
+    @PostMapping("/categoria/delete/{id}")
+    public String deletarCategoria(@PathVariable Long id) {
+        categoriaRepository.deleteById(id);
+        return "redirect:/lojista/categorias";
     }
 
     // =========================
@@ -253,6 +293,31 @@ public String addCategoria(Model model) {
         }
 
         return "redirect:/lojista/pedidos/" + id + "/editar";
+    }
+
+    @PostMapping("/pedidos/{id}/concluir")
+    public String concluirPedido(@PathVariable Long id) {
+        Pedidos pedido = PedidoRepository.findById(id).orElseThrow();
+        pedido.setStatus(PedidosStatus.CONCLUIDO);
+        PedidoRepository.save(pedido);
+        return "redirect:/lojista/pedidos";
+    }
+
+    @PostMapping("/pedidos/{id}/cancelar")
+    public String cancelarPedido(@PathVariable Long id) {
+        Pedidos pedido = PedidoRepository.findById(id).orElseThrow();
+
+        // Restaurar estoque
+        for (Item_Pedido item : pedido.getItens()) {
+            Produto produto = item.getProduto();
+            produto.setEstoque(produto.getEstoque() + item.getQuantidade());
+            produtosRepository.save(produto);
+        }
+
+        pedido.setStatus(PedidosStatus.CANCELADO);
+        PedidoRepository.save(pedido);
+
+        return "redirect:/lojista/pedidos";
     }
 
     // =========================

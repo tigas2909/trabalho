@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import com.example.trabalho_loja_virtual.entities.Pedidos;
 
 public interface PedidoRepository extends JpaRepository<Pedidos , Long>{
-    @Query("select p from Pedidos p join fetch p.cliente c join fetch c.user u where c.id = :clienteId")
+    @Query("select p from Pedidos p join fetch p.cliente c join fetch c.user u left join fetch p.itens i left join fetch i.produto where c.id = :clienteId")
     List<Pedidos> findByCliente_Id(@Param("clienteId") Long clienteId);
 }

@@ -1,9 +1,10 @@
 package com.example.trabalho_loja_virtual.Controller;
 
 import com.example.trabalho_loja_virtual.repository.CategoriaRepository;
+import com.example.trabalho_loja_virtual.repository.ItemPedidoRepository;
+import com.example.trabalho_loja_virtual.repository.ProdutosRepository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,9 +15,12 @@ import com.example.trabalho_loja_virtual.Service.PedidoService;
 import com.example.trabalho_loja_virtual.Service.ProdutoService;
 import com.example.trabalho_loja_virtual.Service.UserService;
 import com.example.trabalho_loja_virtual.entities.Cliente;
+import com.example.trabalho_loja_virtual.entities.Item_Pedido;
 import com.example.trabalho_loja_virtual.entities.Pedidos;
 import com.example.trabalho_loja_virtual.entities.Produto;
 import com.example.trabalho_loja_virtual.entities.User;
+
+import java.math.BigDecimal;
 import com.example.trabalho_loja_virtual.enums.PedidosStatus;
 import com.example.trabalho_loja_virtual.repository.ClienteRepository;
 import com.example.trabalho_loja_virtual.repository.PedidoRepository;
@@ -49,6 +53,12 @@ public class ClienteController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ProdutosRepository produtosRepository;
+
+    @Autowired
+    private ItemPedidoRepository itemPedidoRepository;
 
     public ClienteController(CategoriaRepository categoriaRepository) {
         this.categoriaRepository = categoriaRepository;
@@ -107,15 +117,34 @@ public class ClienteController {
         Long userId = getUserId(request, session);
         if (userId == null) return "redirect:/login/";
 
-        Cliente cliente = clienteRepository.findByUserId(userId)
-                .orElseGet(() -> criarClienteParaUsuario(userId));
+        Map<Long, Integer> carrinhoMap = getOrCreateCarrinho(session);
 
-        Pedidos carrinho = pedidoService
-                .buscarPedidoAbertoPorClienteId(cliente.getId())
-                .orElseGet(() -> pedidoService.criarPedido(cliente));
+        List<Item_Pedido> itens = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
 
-        model.addAttribute("carrinho", carrinho);
-        model.addAttribute("itens", carrinho.getItens());
+        for (Map.Entry<Long, Integer> entry : carrinhoMap.entrySet()) {
+            Long produtoId = entry.getKey();
+            Integer quantidade = entry.getValue();
+            if (quantidade != null && quantidade > 0) {
+                Produto produto = produtosRepository.findById(produtoId).orElse(null);
+                if (produto != null) {
+                    Item_Pedido item = new Item_Pedido();
+                    item.setProduto(produto);
+                    item.setQuantidade(quantidade);
+                    BigDecimal valorItem = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
+                    item.setValorTotal(valorItem);
+                    itens.add(item);
+                    total = total.add(valorItem);
+                }
+            }
+        }
+
+        Pedidos carrinhoView = new Pedidos();
+        carrinhoView.setValor(total);
+        // id remains null since not yet persisted
+
+        model.addAttribute("carrinho", carrinhoView);
+        model.addAttribute("itens", itens);
 
         return "user/carrinho";
     }
@@ -130,14 +159,29 @@ public class ClienteController {
         Long userId = getUserId(request, session);
         if (userId == null) return "redirect:/login/";
 
-        Cliente cliente = clienteRepository.findByUserId(userId)
-                .orElseGet(() -> criarClienteParaUsuario(userId));
+        if (quantidade == null || quantidade < 1) quantidade = 1;
 
-        Pedidos carrinho = pedidoService
-                .buscarPedidoAbertoPorClienteId(cliente.getId())
-                .orElseGet(() -> pedidoService.criarPedido(cliente));
+        Map<Long, Integer> carrinho = getOrCreateCarrinho(session);
 
-        pedidoService.adicionarItemAoPedido(carrinho.getId(), produtoId, quantidade);
+        Produto produto = produtosRepository.findById(produtoId).orElse(null);
+        if (produto == null) {
+            return "redirect:/cliente/produtos";
+        }
+
+        int atual = carrinho.getOrDefault(produtoId, 0);
+        int novo = atual + quantidade;
+
+        // Verifica estoque no momento da adição
+        if (novo > produto.getEstoque()) {
+            // não adiciona mais que o disponível (pode ajustar para mensagem de erro se quiser)
+            novo = produto.getEstoque();
+        }
+
+        if (novo > 0) {
+            carrinho.put(produtoId, novo);
+        } else {
+            carrinho.remove(produtoId);
+        }
 
         return "redirect:/cliente/produtos";
     }
@@ -182,7 +226,7 @@ public class ClienteController {
         return "user/historico";
     }
 
-    @GetMapping("/pedido/finalizar")
+    @PostMapping("/pedido/finalizar")
     public String finalizarPedidos(HttpServletRequest request, HttpSession session) {
 
         Long userId = getUserId(request, session);
@@ -191,25 +235,86 @@ public class ClienteController {
         Cliente cliente = clienteRepository.findByUserId(userId)
                 .orElseGet(() -> criarClienteParaUsuario(userId));
 
-        boolean p = pedidoService.finalizarPedido(cliente.getId());
+        Map<Long, Integer> carrinhoMap = getOrCreateCarrinho(session);
+        if (carrinhoMap.isEmpty()) {
+            return "redirect:/cliente/carrinho";
+        }
 
-        if (!p) return "redirect:/cliente/retornar";
+        // Cria o pedido somente agora, com status Aberto
+        Pedidos pedido = new Pedidos();
+        pedido.setCliente(cliente);
+        pedido.setStatus(PedidosStatus.ABERTO);
+        pedido.setValor(BigDecimal.ZERO);
+        pedidoRepository.save(pedido);  // salva primeiro para ter ID
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (Map.Entry<Long, Integer> entry : carrinhoMap.entrySet()) {
+            Long produtoId = entry.getKey();
+            Integer quantidade = entry.getValue();
+            if (quantidade == null || quantidade <= 0) continue;
+
+            Produto produto = produtosRepository.findById(produtoId).orElse(null);
+            if (produto != null && produto.getEstoque() >= quantidade) {
+                // Deduz estoque só no momento do registro do pedido
+                produto.setEstoque(produto.getEstoque() - quantidade);
+                produtosRepository.save(produto);
+
+                Item_Pedido item = new Item_Pedido();
+                item.setPedido(pedido);
+                item.setProduto(produto);
+                item.setQuantidade(quantidade);
+                BigDecimal valorItem = produto.getPreco().multiply(BigDecimal.valueOf(quantidade));
+                item.setValorTotal(valorItem);
+                itemPedidoRepository.save(item);
+
+                total = total.add(valorItem);
+            }
+        }
+
+        pedido.setValor(total);
+        pedidoRepository.save(pedido);
+
+        // Limpa o carrinho da sessão
+        session.removeAttribute("carrinho");
 
         return "redirect:/cliente/historico";
     }
 
-    @GetMapping("/pedido/cancelar")
+    @PostMapping("/pedido/cancelar")
     public String cancelarPedidos(HttpServletRequest request, HttpSession session) {
 
+        Long userId = getUserId(request, session);
+        if (userId == null) return "redirect:/login/";
+
+        // Apenas limpa o carrinho da sessão (sem Pedido persistido ainda)
+        session.removeAttribute("carrinho");
+
+        return "redirect:/cliente/historico";
+    }
+
+    @PostMapping("/pedido/{id}/cancelar")
+    public String cancelarPedidoEspecifico(@PathVariable Long id, HttpServletRequest request, HttpSession session) {
         Long userId = getUserId(request, session);
         if (userId == null) return "redirect:/login/";
 
         Cliente cliente = clienteRepository.findByUserId(userId)
                 .orElseGet(() -> criarClienteParaUsuario(userId));
 
-        boolean p = pedidoService.cancelarPedido(cliente.getId());
+        Pedidos pedido = pedidoRepository.findById(id).orElse(null);
+        if (pedido != null && pedido.getCliente() != null 
+                && pedido.getCliente().getId().equals(cliente.getId()) 
+                && pedido.getStatus() == PedidosStatus.ABERTO) {
 
-        if (!p) return "redirect:/cliente/retornar";
+            for (Item_Pedido item : pedido.getItens()) {
+                Produto produto = item.getProduto();
+                produto.setEstoque(produto.getEstoque() + item.getQuantidade());
+                produtosRepository.save(produto);
+            }
+
+            pedido.setStatus(PedidosStatus.CANCELADO);
+            pedidoRepository.save(pedido);
+        }
 
         return "redirect:/cliente/historico";
     }
@@ -255,5 +360,19 @@ public class ClienteController {
         }
 
         return null;
+    }
+
+    // =========================
+    // CARRINHO TEMPORÁRIO (SESSION) - não persiste Pedido até finalizar
+    // =========================
+
+    @SuppressWarnings("unchecked")
+    private Map<Long, Integer> getOrCreateCarrinho(HttpSession session) {
+        Map<Long, Integer> carrinho = (Map<Long, Integer>) session.getAttribute("carrinho");
+        if (carrinho == null) {
+            carrinho = new HashMap<>();
+            session.setAttribute("carrinho", carrinho);
+        }
+        return carrinho;
     }
 }

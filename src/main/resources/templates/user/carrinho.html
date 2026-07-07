@@ -80,7 +80,7 @@
 
 <div class="container">
 
-    <h3 th:text="'Carrinho do cliente #' + ${carrinho.id}"></h3>
+    <h3 th:text="${carrinho != null and carrinho.id != null and carrinho.id > 0} ? 'Carrinho do cliente #' + ${carrinho.id} : 'Seu Carrinho'"></h3>
 
     <table>
         <thead>
@@ -115,8 +115,12 @@
 
     <div class="actions">
         <a th:href="@{/cliente/produtos}" class="btn">Continuar comprando</a>
-        <a th:href="@{/cliente/pedido/finalizar}" class="btn">Finalizar compra</a>
-        <a th:href="@{/cliente/pedido/cancelar}" class="btn" style="background: #dc2626;">Cancelar pedido</a>
+        <form th:action="@{/cliente/pedido/finalizar}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja finalizar a compra?');">
+            <button type="submit" class="btn">Finalizar compra</button>
+        </form>
+        <form th:action="@{/cliente/pedido/cancelar}" method="post" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja cancelar o pedido?');">
+            <button type="submit" class="btn" style="background: #dc2626;">Cancelar pedido</button>
+        </form>
     </div>
 
 </div>
