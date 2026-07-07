@@ -1,11 +1,178 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+<meta charset="UTF-8">
+<title>Gerenciar Produtos</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f4f4;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .top-buttons {
+        display: none; /* removed usage */
+    }
+
+    table {
+        width: 100%;
+        background: white;
+        border-collapse: collapse;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background: #343a40;
+        color: white;
+    }
+
+    .ativo {
+        color: green;
+        font-weight: bold;
+    }
+
+    .inativo {
+        color: red;
+        font-weight: bold;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+        margin: 2px;
+    }
+
+    .btn-ativar {
+        background: #28a745;
+    }
+
+    .btn-desativar {
+        background: #dc3545;
+    }
+
+    .btn-editar {
+        background: #007bff;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+    }
+</style>
+
 </head>
 <body>
-    <h1>Usuario administrador</h1>
+
+<h1>Lista de Produtos</h1>
+
+<!-- BOTÕES SUPERIORES -->
+<div style="position: relative; margin-bottom: 20px;">
+    <a href="/lojista/produto/add" style="position: absolute; left: 12px; top: 0;">
+        <button class="btn btn-ativar">+ Adicionar Produto</button>
+    </a>
+    <div style="text-align: center;">
+        <a href="/lojista/categorias">
+            <button class="btn btn-ativar">Categorias</button>
+        </a>
+    </div>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Estoque</th>
+            <th>Qtd. Mínima</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="produto : ${produtos}">
+
+            <td th:text="${produto.id}"></td>
+            <td th:text="${produto.nome}"></td>
+            <td th:text="${produto.descricao}"></td>
+            <td th:text="${'R$ ' + produto.preco}"></td>
+            <td th:text="${produto.estoque}"></td>
+            <td th:text="${produto.qtdMinima}"></td>
+
+            <td>
+                <span th:if="${produto.status != null and produto.status.name() == 'ATIVO'}"
+                      class="ativo">
+                    ATIVO
+                </span>
+
+                <span th:if="${produto.status != null and produto.status.name() == 'INATIVO'}"
+                      class="inativo">
+                    INATIVO
+                </span>
+            </td>
+
+            <td>
+
+                <!-- EDITAR -->
+                <a th:href="@{/lojista/produto/editar/{id}(id=${produto.id})}">
+                    <button class="btn btn-editar">Editar</button>
+                </a>
+
+                <!-- EXCLUIR -->
+                <form th:action="@{/lojista/produto/delete/{id}(id=${produto.id})}" method="post" style="display:inline;"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este produto?');">
+                    <button type="submit" class="btn btn-desativar">Excluir</button>
+                </form>
+
+                <!-- TOGGLE STATUS -->
+                <form th:action="@{/lojista/trocar-status/{id}(id=${produto.id})}"
+                      method="post"
+                      style="display:inline;">
+
+                    <button
+                        th:if="${produto.status != null and produto.status.name() == 'ATIVO'}"
+                        type="submit"
+                        class="btn btn-desativar">
+                        Desativar
+                    </button>
+
+                    <button
+                        th:if="${produto.status != null and produto.status.name() == 'INATIVO'}"
+                        type="submit"
+                        class="btn btn-ativar">
+                        Ativar
+                    </button>
+
+                </form>
+
+            </td>
+
+        </tr>
+    </tbody>
+</table>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="/lojista/retornar">
+        <button class="btn" style="background: #6c757d; color: white;">Voltar à página principal</button>
+    </a>
+</div>
+
 </body>
 </html>

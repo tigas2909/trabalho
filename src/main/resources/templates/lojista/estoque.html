@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .danger {
+            color: red;
+            font-weight: bold;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Dashboard da Loja</h1>
+
+<!-- ESTOQUE TOTAL -->
+<div class="card">
+    <h2>Estoque Total</h2>
+    <h3 th:text="${estoqueTotal}">0</h3>
+</div>
+
+<!-- ESTOQUE BAIXO -->
+<div class="card">
+    <h2>Produtos com Estoque Baixo</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Estoque</th>
+            <th>Mínimo</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="produto : ${estoqueBaixo}">
+            <td th:text="${produto.id}"></td>
+            <td th:text="${produto.nome}"></td>
+
+            <!-- CORRIGIDO AQUI -->
+            <td th:text="${produto.estoque}"
+                th:classappend="${produto.estoque < produto.qtdMinima} ? 'danger' : ''">
+            </td>
+
+            <td th:text="${produto.qtdMinima}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- MAIS VENDIDOS -->
+<div class="card">
+    <h2>Top 5 Produtos Mais Vendidos</h2>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Vendas</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="item : ${maisVendidos}">
+            <td th:text="${item[0]}"></td>
+            <td th:text="${item[1]}"></td>
+            <td th:text="${item[2]}"></td>
+            <td th:text="${item[3]}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="/lojista/retornar">
+        <button class="btn" style="background: #6c757d; color: white;">Voltar à página principal</button>
+    </a>
+</div>
+</body>
+</html>

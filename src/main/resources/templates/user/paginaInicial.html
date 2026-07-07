@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Loja Virtual - Cliente</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        header {
+            background: #1f2937;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .menu-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+        }
+
+        footer {
+            margin-top: 40px;
+            background: #1f2937;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🛒 Minha Loja</div>
+
+    <nav>
+        <a th:href="@{/cliente/}">Início</a>
+        <a th:href="@{/cliente/produtos}">Produtos</a>
+        <a th:href="@{/cliente/carrinho}">Carrinho</a>
+        <a th:href="@{/cliente/historico}">Meus Pedidos</a>
+        <a th:href="@{/login/logout}">Sair</a>
+    </nav>
+</header> 
+
+<div class="container">
+    <h2 th:text="'Bem-vindo a sua área ' + ${nome} + '!!!'"></h2>
+    <p>Escolha uma opção abaixo:</p>
+
+    <div class="menu-box">
+
+        <div class="card" onclick="location.href='/cliente/produtos'">
+            📦 Ver Produtos
+        </div>
+
+        <div class="card" onclick="location.href='/cliente/carrinho'">
+            🛒 Carrinho
+        </div>
+
+        <div class="card" onclick="location.href='/cliente/historico'">
+            📑 Meus Pedidos
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    © 2026 - Sistema de Loja Virtual
+</footer>
+
+</body>
+</html>

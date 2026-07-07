@@ -2,7 +2,7 @@ package com.example.trabalho_loja_virtual.enums;
 
 public enum PedidosStatus {
     CONCLUIDO("concluido"),
-    PENDENTE("pendente"),
+    ABERTO("aberto"),
     CANCELADO("cancelado");
 
     private String status;

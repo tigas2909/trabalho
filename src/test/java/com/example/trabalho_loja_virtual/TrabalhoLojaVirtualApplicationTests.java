@@ -1,6 +1,13 @@
 package com.example.trabalho_loja_virtual;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import com.example.trabalho_loja_virtual.Service.LoginService;
+import com.example.trabalho_loja_virtual.Service.UserService;
+import com.example.trabalho_loja_virtual.entities.User;
+import com.example.trabalho_loja_virtual.repository.UserRepository;
+
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,30 +15,41 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class TrabalhoLojaVirtualApplicationTests {
 
+	
 	/*
-    @Autowired
-    private UserRepository userRepository;
-
 	@Autowired
 	private UserService US;
-	*/
+	
 	@Autowired
 	private LoginService LS;
-	
+	*/
 
-	/* 
-    @Test
+	@Autowired
+	private UserService ur;
+
+	@Test
     void testUserEntity() {
         User user = new User();
-        user.setNome("João");
-        user.setEmail("joao@email.com");
-        user.setSenha("123456");
-        user.setTipoUser("CLIENTE");
-        user.setStatus("ATIVO");
+        user.setNome("lojista");
+        user.setEmail("lojista@gmail.com");
+        user.setSenha("lojista");
+        user.setTipoUser("lojista");
+        user.setStatus("ativo");
 
-        userRepository.save(user);
+        ur.insert(user);
     }
-	*/
+
+	@Test
+	void testSalvarTipoUser(){
+		List<User> us = ur.selectAll();
+		for(User u : us){
+			ur.salvarUserTipo(u);
+		}
+	}
+
+	
+    
+	
 
 	/*
 	@Test 
@@ -46,7 +64,7 @@ class TrabalhoLojaVirtualApplicationTests {
 		userRepository.save(u1);
 	}	
 	*/
-
+	/*
 	@Test
 	void testLogin() {
 		// Simulando o processo de login
@@ -57,4 +75,5 @@ class TrabalhoLojaVirtualApplicationTests {
 
 		System.out.println(resultado); // Verificando se o login foi bem-sucedido
 	}
+	*/
 }

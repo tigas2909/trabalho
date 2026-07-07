@@ -8,20 +8,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.NotNull;
+
 @Entity
-@Table(name = "Clientes")
+@Table(name = "clientes")
 public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "O usuário associado é obrigatório")
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // puxa os dados da tabela User
+    private User user;
 
-    private String cpf;
-    private String endereco;
     
     public Long getId() {
         return id;
@@ -35,18 +36,8 @@ public class Cliente {
     public void setUser(User user) {
         this.user = user;
     }
-    public String getCpf() {
-        return cpf;
-    }
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-    public String getEndereco() {
-        return endereco;
-    }
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
-    }
+    
+    
     
     
 }

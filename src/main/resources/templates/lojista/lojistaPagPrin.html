@@ -3,21 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <title>Painel do Lojista</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f4f4;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            background: #f0f0f0;
+        }
+    </style>
 </head>
 <body>
 
-    <h1 th:text="'Bem-vindo, ' + ${nome} + '!'">Bem-vindo, Lojista!</h1>
+    <h1 th:text="'Bem-vindo, ' + ${nome} + '!'">Bem-vindo!</h1>
 
-    <nav>
-        <ul>
-            <li><a href="/lojista/dashboard">Dashboard</a></li>
-            <li><a href="/lojista/produtos">Gerenciar Produtos</a></li>
-            <li><a href="/lojista/estoque">Controle de Estoque</a></li>
-            <li><a href="/lojista/pedidos">Pedidos</a></li>
-            <li><a href="/user/add">Adicionar Usuário</a></li>
-            <li><a href="/login/logout">Sair</a></li>
-        </ul>
-    </nav>
+    <div class="cards">
+
+        <a th:href="@{/lojista/dashboard}" class="card">
+            📊 Dashboard
+        </a>
+
+        <a th:href="@{/lojista/estoque}" class="card">
+            📉 Estoque
+        </a>
+
+        <a th:href="@{/lojista/pedidos}" class="card">
+            🧾 Pedidos
+        </a>
+
+        <a th:href="@{/lojista/add}" class="card">
+            👤 Adicionar Usuário
+        </a>
+
+        <a th:href="@{/lojista/listarAll}" class="card">
+            👥 Lista de Usuários
+        </a>
+
+        <a th:href="@{/login/logout}" class="card">
+            🚪 Sair
+        </a>
+    </div>
 
 </body>
 </html>

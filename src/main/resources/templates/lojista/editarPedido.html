@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Editar Pedido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f4f4;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            background: #f0f0f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f0f0f0;
+        }
+        select, input[type="number"] {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+        }
+        .form-adicionar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        a.voltar {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a.voltar:hover {
+            text-decoration: underline;
+        }
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 2px;
+        }
+        .btn:disabled {
+            background: #6b7280 !important;
+            cursor: not-allowed;
+        }
+        .status-aberto { color: #f59e0b; font-weight: bold; }
+        .status-concluido { color: #22c55e; font-weight: bold; }
+        .status-cancelado { color: #ef4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <a class="voltar" th:href="@{/lojista/pedidos}">← Voltar</a>
+
+    <h1>Editar Pedido #<span th:text="${pedido.id}"></span></h1>
+    <p>Cliente: <span th:text="${pedido.cliente.user.nome}"></span></p>
+    <p>Valor Total: R$ <span th:text="${pedido.valor}"></span></p>
+    <p>Status: <span th:text="${pedido.status}" th:classappend="${pedido.status.name() == 'ABERTO'} ? 'status-aberto' : (${pedido.status.name() == 'CONCLUIDO'} ? 'status-concluido' : 'status-cancelado')"></span></p>
+
+    <h2>Itens do Pedido</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Valor</th>
+                <th>Quantidade em estoque</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${pedido.itens}">
+                <td th:text="${item.produto.nome}"></td>
+                <td th:text="${item.quantidade}"></td>
+                <td th:text="${item.valorTotal}"></td>
+                <td th:text="${item.produto.estoque}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <form th:action="@{/lojista/pedidos/{id}/concluir(id=${pedido.id})}" method="post" style="display: inline-block; margin-right: 10px;" onsubmit="return confirm('Tem certeza que deseja concluir o pedido?');">
+            <button type="submit" class="btn"
+                    th:style="${pedido.status.name() == 'CONCLUIDO' or pedido.status.name() == 'CANCELADO'} ? 'background: #6b7280;' : 'background: #28a745;'"
+                    th:disabled="${pedido.status.name() == 'CONCLUIDO' or pedido.status.name() == 'CANCELADO'}">Concluir pedido</button>
+        </form>
+        <form th:action="@{/lojista/pedidos/{id}/cancelar(id=${pedido.id})}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja cancelar o pedido?');">
+            <button type="submit" class="btn"
+                    th:style="${pedido.status.name() == 'CONCLUIDO' or pedido.status.name() == 'CANCELADO'} ? 'background: #6b7280;' : 'background: #dc3545;'"
+                    th:disabled="${pedido.status.name() == 'CONCLUIDO' or pedido.status.name() == 'CANCELADO'}">Cancelar pedido</button>
+        </form>
+    </div>
+
+</body>
+</html>

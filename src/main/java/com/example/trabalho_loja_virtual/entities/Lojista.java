@@ -8,20 +8,21 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
+import jakarta.validation.constraints.NotNull;
+
 @Entity
-@Table(name = "Lojistas")
+@Table(name = "lojistas")
 public class Lojista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "O usuário associado é obrigatório")
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // puxa os dados da tabela User
 
-    private String cnpj;
-    private String nomeLoja;
     
     public Long getId() {
         return id;
@@ -35,18 +36,5 @@ public class Lojista {
     public void setUser(User user) {
         this.user = user;
     }
-    public String getCnpj() {
-        return cnpj;
-    }
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-    public String getNomeLoja() {
-        return nomeLoja;
-    }
-    public void setNomeLoja(String nomeLoja) {
-        this.nomeLoja = nomeLoja;
-    }
-    
     
 }

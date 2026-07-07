@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Produto</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        form {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<form th:action="@{/lojista/produto/save}" method="post" th:object="${produto}">
+
+    <h2 th:text="${produto.id == null} ? 'Adicionar Produto' : 'Editar Produto'"></h2>
+
+    <input type="hidden" th:field="*{id}">
+
+    <label>Nome</label>
+    <input type="text" th:field="*{nome}" required>
+    <span th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}" style="color:red; font-size:0.8em;"></span>
+
+    <label>Descrição</label>
+    <input type="text" th:field="*{descricao}">
+
+    <label>Preço</label>
+    <input type="number" step="0.01" th:field="*{preco}" required>
+    <span th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}" style="color:red; font-size:0.8em;"></span>
+
+    <label>Estoque</label>
+    <input type="number" th:field="*{estoque}" required>
+    <span th:if="${#fields.hasErrors('estoque')}" th:errors="*{estoque}" style="color:red; font-size:0.8em;"></span>
+
+    <label>Qtd Mínima</label>
+    <input type="number" th:field="*{qtdMinima}" required>
+    <span th:if="${#fields.hasErrors('qtdMinima')}" th:errors="*{qtdMinima}" style="color:red; font-size:0.8em;"></span>
+
+    <label>Status</label>
+    <select th:field="*{status}">
+        <option value="ATIVO">Ativo</option>
+        <option value="INATIVO">Inativo</option>
+    </select>
+    <span th:if="${#fields.hasErrors('status')}" th:errors="*{status}" style="color:red; font-size:0.8em;"></span>
+
+    <label>Categoria</label>
+    <select th:field="*{categoria.id}">
+        <option th:each="c : ${categorias}"
+                th:value="${c.id}"
+                th:text="${c.nome}">
+        </option>
+    </select>
+    <span th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}" style="color:red; font-size:0.8em;"></span>
+
+    <button type="submit">Salvar</button>
+
+    <a href="/lojista/estoque">Cancelar</a>
+
+</form>
+
+</body>
+</html>
