@@ -84,7 +84,7 @@ A autenticação é gerenciada via cookie (userId) e um filtro customizado que p
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/pilao-perigoso/trabalho_web3_fork.git
+git clone https://github.com/tigas2909/trabalho.git
 cd trabalho_loja_virtual
 ```
 
